@@ -463,6 +463,15 @@ class PatientRenderer:
                 if wait is None:
                     raise
                 time.sleep(wait)
+            except (ExchangePending, WitnessError):
+                raise
+            except Exception as error:  # a gateway that gave up on a slow preview render (HTTP 500, 502 or 504 from the Pod)
+                if getattr(getattr(error, "response", None), "status_code", None) not in self.gateway_codes:
+                    raise
+                timeouts += 1
+                if timeouts > RENDER_TIMEOUT_RETRIES:
+                    raise _render_timeout() from error
+                time.sleep(next(waits, 60))
 
 
 def _render_capped() -> RenderRejected:
