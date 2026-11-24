@@ -406,7 +406,7 @@ class ModelCalls(Protocol):
 class PatientRenderer:
     def __init__(self, renderer: Renderer) -> None:
         self._renderer = renderer
-        self.gateway_codes: tuple[int, ...] = (500,)
+        self.gateway_codes: tuple[int, ...] = (500, 502, 504)
         self.cap = 0
         self.room = 0
         self.rendered: set[str] = set()
